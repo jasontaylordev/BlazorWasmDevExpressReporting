@@ -1,11 +1,13 @@
+﻿using System;
+using System.Linq;
+using DevExpress.AspNetCore;
+using DevExpress.XtraReports.Web.Extensions;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Linq;
 
 namespace BlazorReporting.Server
 {
@@ -22,14 +24,33 @@ namespace BlazorReporting.Server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            services.AddDevExpressControls();
+            services.AddMvc().AddNewtonsoftJson();
+            services.AddScoped<ReportStorageWebExtension, CustomReportStorageWebExtension>();
+            services.AddResponseCompression(opts =>
+            {
+                opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+                    new[] { "application/octet-stream" });
+            });
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowCorsPolicy", builder =>
+                {
+                    // Allow all ports on local host.
+                    builder.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost");
+                    builder.WithHeaders("Content-Type");
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseResponseCompression();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -46,12 +67,17 @@ namespace BlazorReporting.Server
             app.UseBlazorFrameworkFiles();
             app.UseStaticFiles();
 
-            app.UseRouting();
+            app.UseDevExpressControls();
 
+            app.UseRouting();
+            app.UseCors("AllowCorsPolicy");
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapDefaultControllerRoute();
                 endpoints.MapRazorPages();
-                endpoints.MapControllers();
+                endpoints.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapFallbackToFile("index.html");
             });
         }

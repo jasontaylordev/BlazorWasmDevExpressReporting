@@ -1,0 +1,17 @@
+﻿@page "/viewer"
+@inject IJSRuntime JSRuntime
+@implements IDisposable
+
+<div id="viewer" style="width:100%; height: 800px" data-bind="dxReportViewer: $data"></div>
+
+@code {
+    protected override void OnAfterRender(bool firstRender)
+    {
+        JSRuntime.InvokeAsync<object>("JsFunctions.InitWebDocumentViewer");
+    }
+
+    public void Dispose()
+    {
+        JSRuntime.InvokeAsync<string>("JsFunctions.Dispose", "viewer");
+    }
+}

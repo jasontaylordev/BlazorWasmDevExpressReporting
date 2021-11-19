@@ -1,0 +1,17 @@
+﻿@page "/designer"
+@inject IJSRuntime JSRuntime
+@implements IDisposable
+
+<div style="width: 100%; height: 800px" id="designer" data-bind="dxReportDesigner: $data"></div>
+
+@code {
+    protected override void OnAfterRender(bool firstRender)
+    {
+        JSRuntime.InvokeAsync<object>("JsFunctions.InitReportDesigner");
+    }
+
+    public void Dispose()
+    {
+        JSRuntime.InvokeAsync<string>("JsFunctions.Dispose", "designer");
+    }
+}

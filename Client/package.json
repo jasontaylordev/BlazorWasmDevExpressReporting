@@ -1,0 +1,27 @@
+{
+  "name": "blazor-reporting",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --mode production"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "webpack": "^4.40.2",
+    "webpack-cli": "^3.3.9",
+    "devexpress-reporting": "21.2.3",
+    "@devexpress/analytics-core": "21.2.3",
+    "devextreme": "21.2.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.6.0",
+    "babel-loader": "^8.0.6",
+    "css-loader": "^3.2.0",
+    "extract-text-webpack-plugin": "^4.0.0-beta.0",
+    "file-loader": "~2.0.0",
+    "html-loader": "^0.5.5",
+    "style-loader": "^1.0.0"
+  }
+}
